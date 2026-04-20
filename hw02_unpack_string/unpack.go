@@ -1,4 +1,4 @@
-package hw02_unpack_string
+package hw02unpackstring
 
 import (
 	"errors"
@@ -33,9 +33,8 @@ func Unpack(inStr string) (string, error) {
 			if isCurLetter || isCurSpace || isEscSymb && isCurDigit {
 				outStrAdd(&outStr, inRune[i], 1)
 				return outStr, nil
-			} else {
-				return "", ErrInvalidString
 			}
+			return "", ErrInvalidString
 		}
 
 		isNextLetter := unicode.IsLetter(inRune[i+1])

@@ -1,4 +1,4 @@
-module github.com/eatfirstRu/hw02_unpack_string
+module github.com/eatfirstRu/hw02unpackstring
 
 go 1.19
 
