@@ -46,8 +46,8 @@ func Unpack(inStr string) (string, error) {
 
 		// если текущий символ буква или спец символ или перед ним стоит isEscSymb=\\
 		if isCurLetter || isCurSpace || isEscSymb {
-			//смотрим следующий символ
-			//цифра, печатаем текущий символ cntRepeat раз
+			// смотрим следующий символ
+			// цифра, печатаем текущий символ cntRepeat раз
 			if isNextDigit {
 				cntRepeat, _ := strconv.Atoi(string(inRune[i+1]))
 				outStrAdd(&outStr, inRune[i], cntRepeat)
@@ -55,7 +55,7 @@ func Unpack(inStr string) (string, error) {
 				isEscSymb = false
 				continue
 			}
-			//буква или спец символ, печатаем текущий символ 1 раз
+			// буква или спец символ, печатаем текущий символ 1 раз
 			if isNextLetter || isNextSpace || isNextBackSlash {
 				outStrAdd(&outStr, inRune[i], 1)
 				isEscSymb = false
