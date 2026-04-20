@@ -19,7 +19,6 @@ func Unpack(inStr string) (string, error) {
 	inRune := []rune(inStr)
 
 	for i := 0; i < len(inRune); i++ {
-
 		if inRune[i] == '\\' && !isEscSymb {
 			isEscSymb = true
 			continue
