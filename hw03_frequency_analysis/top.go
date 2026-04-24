@@ -26,7 +26,7 @@ func Top10(inStr string) []string {
 
 	for _, word := range words {
 		if word != "" {
-			cntWord[word] += 1
+			cntWord[word]++
 		}
 	}
 
