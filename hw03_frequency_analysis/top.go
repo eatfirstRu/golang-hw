@@ -11,8 +11,8 @@ var taskWithAsteriskIsCompleted = true
 
 func Top10(inStr string) []string {
 	var re regexp.Regexp
-	var cntWord = make(map[string]int)
-	var resultWords = make([]string, 0, 10)
+	cntWord := make(map[string]int)
+	resultWords := make([]string, 0, 10)
 
 	if taskWithAsteriskIsCompleted {
 		inStr = strings.ToLower(inStr)
