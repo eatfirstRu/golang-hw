@@ -15,7 +15,7 @@ func Run(tasks []Task, n, m int) error {
 	errCnt := 0
 	wg := sync.WaitGroup{}
 	mu := sync.Mutex{}
-	// игнорировать ошибки в принципе
+	// игнорировать ошибки в принципе.
 	if m < 0 {
 		m = len(tasks) * 100
 	}
@@ -53,6 +53,6 @@ func Run(tasks []Task, n, m int) error {
 		}
 		iTask--
 	}
-	// fmt.Printf("recieved errCnt=%d errors limit=%d\n", errCnt, m)
+	// fmt.Printf("received errCnt=%d errors limit=%d\n", errCnt, m)
 	return nil
 }
