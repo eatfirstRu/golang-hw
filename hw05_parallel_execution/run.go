@@ -15,15 +15,12 @@ func Run(tasks []Task, n, m int) error {
 	errCnt := 0
 	wg := sync.WaitGroup{}
 	mu := sync.Mutex{}
-	// игнорировать ошибки в принципе.
 	if m < 0 {
 		m = len(tasks) * 100
 	}
-
 	if n > len(tasks) {
 		n = len(tasks)
 	}
-
 	for iTask := 0; iTask < len(tasks); iTask++ {
 		fmt.Printf("start iTask=%d\n", iTask)
 		for i := 0; i < n; i++ {
