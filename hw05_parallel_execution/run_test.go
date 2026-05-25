@@ -12,7 +12,6 @@ import (
 	"go.uber.org/goleak"
 )
 
-// go test ./hw05parallelexecution
 func TestRun(t *testing.T) {
 	defer goleak.VerifyNone(t)
 
