@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -42,15 +43,15 @@ func TestCopy(t *testing.T) {
 			var bSrc bytes.Buffer
 			var bDst bytes.Buffer
 
-			/*fName := fmt.Sprintf("%s/out_offset%d_limit%d.txt", filepath.Dir(tf.from), tf.offset, tf.limit)
+			fName := fmt.Sprintf("%s/out_offset%d_limit%d.txt", filepath.Dir(tf.from), tf.offset, tf.limit)
 			fSrc, err := os.OpenFile(fName, os.O_RDONLY, 0o666)
 			if err != nil {
 				require.NoError(t, err, "open src file")
 			}
 			defer fSrc.Close()
-			_, _ = io.Copy(&bSrc, fSrc)*/
+			_, _ = io.Copy(&bSrc, fSrc)
 
-			fSrc, err := os.OpenFile(tf.from, os.O_RDONLY, 0o666)
+			/*fSrc, err := os.OpenFile(tf.from, os.O_RDONLY, 0o666)
 			if err != nil {
 				require.NoError(t, err, "open src file")
 			}
@@ -60,7 +61,7 @@ func TestCopy(t *testing.T) {
 			if tf.limit == 0 || tf.limit > fi.Size()-tf.offset {
 				tf.limit = fi.Size() - tf.offset
 			}
-			_, _ = io.CopyN(&bSrc, fSrc, tf.limit)
+			_, _ = io.CopyN(&bSrc, fSrc, tf.limit)*/
 
 			fDst, err := os.OpenFile(tf.to, os.O_RDONLY, 0o666)
 			if err != nil {
