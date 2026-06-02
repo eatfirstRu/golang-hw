@@ -17,14 +17,16 @@ type testFile struct {
 
 func TestCopy(t *testing.T) {
 	// Place your code here.
-	path := ""
+	err := os.MkdirAll("tmp", 0o755)
+	require.NoError(t, err)
+
 	testFiles := []testFile{
-		{from: path + "/testdata/input.txt", to: path + "/tmp/out_offset0_limit0.txt", offset: 0, limit: 0},
-		{from: path + "/testdata/input.txt", to: path + "/tmp/out_offset0_limit10.txt", offset: 0, limit: 10},
-		{from: path + "/testdata/input.txt", to: path + "/tmp/out_offset0_limit1000.txt", offset: 0, limit: 1000},
-		{from: path + "/testdata/input.txt", to: path + "/tmp/out_offset0_limit10000.txt", offset: 0, limit: 10000},
-		{from: path + "/testdata/input.txt", to: path + "/tmp/out_offset100_limit1000.txt", offset: 100, limit: 1000},
-		{from: path + "/testdata/input.txt", to: path + "/tmp/out_offset6000_limit1000.txt", offset: 6000, limit: 1000},
+		{from: "testdata/input.txt", to: "tmp/out_offset0_limit0.txt", offset: 0, limit: 0},
+		{from: "testdata/input.txt", to: "tmp/out_offset0_limit10.txt", offset: 0, limit: 10},
+		{from: "testdata/input.txt", to: "tmp/out_offset0_limit1000.txt", offset: 0, limit: 1000},
+		{from: "testdata/input.txt", to: "tmp/out_offset0_limit10000.txt", offset: 0, limit: 10000},
+		{from: "testdata/input.txt", to: "tmp/out_offset100_limit1000.txt", offset: 100, limit: 1000},
+		{from: "testdata/input.txt", to: "tmp/out_offset6000_limit1000.txt", offset: 6000, limit: 1000},
 	}
 
 	t.Run("no errors during copy", func(t *testing.T) {

@@ -14,16 +14,16 @@ var (
 )
 
 func checkFilePath(path string) error {
-	path = filepath.Dir(path)
-	_, err := os.Stat(path)
+	dir := filepath.Dir(path)
+	_, err := os.Stat(dir)
 	if os.IsNotExist(err) {
-		execPath, err := os.Executable()
+		wd, err := os.Getwd()
 		if err != nil {
 			return fmt.Errorf("get current directory: %w", err)
 		}
-		path = filepath.Dir(execPath) + path
+		dir = filepath.Join(wd, dir)
 	}
-	_, err = os.Stat(path)
+	_, err = os.Stat(dir)
 	if os.IsNotExist(err) {
 		return fmt.Errorf("not exists current directory + path: %w", err)
 	}
