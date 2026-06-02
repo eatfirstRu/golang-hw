@@ -13,25 +13,25 @@ var (
 	ErrOffsetExceedsFileSize = errors.New("offset exceeds file size")
 )
 
-func getFilePath(path string) (string, error) {
+func checkFilePath(path string) error {
 	path = filepath.Dir(path)
 	_, err := os.Stat(path)
 	if os.IsNotExist(err) {
 		execPath, err := os.Executable()
 		if err != nil {
-			return "", fmt.Errorf("get current directory: %w", err)
+			return fmt.Errorf("get current directory: %w", err)
 		}
 		path = filepath.Dir(execPath) + path
 	}
 	_, err = os.Stat(path)
 	if os.IsNotExist(err) {
-		return "", fmt.Errorf("not exists current directory + path: %w", err)
+		return fmt.Errorf("not exists current directory + path: %w", err)
 	}
-	return path, nil
+	return nil
 }
 
 func Copy(fromPath, toPath string, offset, limit int64) error {
-	_, err := getFilePath(fromPath)
+	err := checkFilePath(fromPath)
 	if err != nil {
 		return err
 	}
@@ -57,7 +57,7 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 		limit = fi.Size() - offset
 	}
 
-	_, err = getFilePath(toPath)
+	err = checkFilePath(toPath)
 	if err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 	defer fDst.Close()
 
 	written, err := io.CopyN(fDst, fSrc, limit)
-	if (err != nil && err != io.EOF) || written < limit {
+	if (err != nil && !errors.Is(err, io.EOF)) || written < limit {
 		return fmt.Errorf("copy to destination file: %w", err)
 	}
 
