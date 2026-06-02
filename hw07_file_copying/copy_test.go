@@ -38,7 +38,13 @@ func TestCopy(t *testing.T) {
 		}
 	})
 
-	t.Run("equal copy", func(t *testing.T) {
+	/*
+		в винде и линуксе этот тест работает по разному.
+		в линуксе файлы из testdata совпадают с резальтатом.
+		в винде создаваемые файлы короче и надо сравнивать через закомменченный тестовый пример
+	*/
+
+	t.Run("equal copy by testdata files", func(t *testing.T) {
 		for i, tf := range testFiles {
 			var bSrc bytes.Buffer
 			var bDst bytes.Buffer
@@ -51,7 +57,25 @@ func TestCopy(t *testing.T) {
 			defer fSrc.Close()
 			_, _ = io.Copy(&bSrc, fSrc)
 
-			/*fSrc, err := os.OpenFile(tf.from, os.O_RDONLY, 0o666)
+			fDst, err := os.OpenFile(tf.to, os.O_RDONLY, 0o666)
+			if err != nil {
+				require.NoError(t, err, "open dst file")
+			}
+			defer fDst.Close()
+			_, _ = io.Copy(&bDst, fDst)
+
+			tstNum := fmt.Sprintf("test #%d", i)
+
+			require.Equal(t, bSrc.String(), bDst.String(), tstNum)
+		}
+	})
+
+	t.Run("equal copy by bytes compare ", func(t *testing.T) {
+		for i, tf := range testFiles {
+			var bSrc bytes.Buffer
+			var bDst bytes.Buffer
+
+			fSrc, err := os.OpenFile(tf.from, os.O_RDONLY, 0o666)
 			if err != nil {
 				require.NoError(t, err, "open src file")
 			}
@@ -61,7 +85,7 @@ func TestCopy(t *testing.T) {
 			if tf.limit == 0 || tf.limit > fi.Size()-tf.offset {
 				tf.limit = fi.Size() - tf.offset
 			}
-			_, _ = io.CopyN(&bSrc, fSrc, tf.limit)*/
+			_, _ = io.CopyN(&bSrc, fSrc, tf.limit)
 
 			fDst, err := os.OpenFile(tf.to, os.O_RDONLY, 0o666)
 			if err != nil {
