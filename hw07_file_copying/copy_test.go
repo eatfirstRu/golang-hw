@@ -39,9 +39,9 @@ func TestCopy(t *testing.T) {
 	})
 
 	/*
-		в винде и линуксе этот тест работает по разному.
-		в линуксе файлы из testdata совпадают с резальтатом.
-		в винде создаваемые файлы короче и надо сравнивать через закомменченный тестовый пример
+		в винде и линуксе этот тест работает по разному
+		в линуксе файлы из testdata совпадают с резальтатом
+		в винде создаваемые файлы короче
 	*/
 
 	t.Run("equal copy by testdata files", func(t *testing.T) {
@@ -70,7 +70,7 @@ func TestCopy(t *testing.T) {
 		}
 	})
 
-	t.Run("equal copy by bytes compare ", func(t *testing.T) {
+	t.Run("equal copy by bytes compare", func(t *testing.T) {
 		for i, tf := range testFiles {
 			var bSrc bytes.Buffer
 			var bDst bytes.Buffer
