@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var TestEnv Environment = Environment{
+var TestEnv = Environment{
 	"BAR":   EnvValue{NeedRemove: false, Value: "bar"},
 	"EMPTY": EnvValue{NeedRemove: false, Value: ""},
 	"FOO":   EnvValue{NeedRemove: false, Value: "   foo\nwith new line"},
@@ -23,7 +23,9 @@ func TestEnvironment_String(t *testing.T) {
 		{
 			name: "test String()",
 			e:    TestEnv,
-			want: "\nkey: BAR\tvalue: false,[bar]\nkey: EMPTY\tvalue: false,[]\nkey: FOO\tvalue: false,[   foo\nwith new line]\nkey: HELLO\tvalue: false,[\"hello\"]\nkey: UNSET\tvalue: true,[]\n",
+			want: "\nkey: BAR\tvalue: false,[bar]\nkey: EMPTY\tvalue: false,[]\n" +
+				"key: FOO\tvalue: false,[   foo\nwith new line]\n" +
+				"key: HELLO\tvalue: false,[\"hello\"]\nkey: UNSET\tvalue: true,[]\n",
 		},
 	}
 	for _, tt := range tests {
