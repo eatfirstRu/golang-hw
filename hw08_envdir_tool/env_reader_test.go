@@ -23,7 +23,7 @@ func TestEnvironment_String(t *testing.T) {
 		{
 			name: "test String()",
 			e:    TestEnv,
-			want: "\nkey: BAR\tvalue: false,[bar]\nkey: EMPTY\tvalue: false,[ ]\nkey: FOO\tvalue: false,[   foo\nwith new line]\nkey: HELLO\tvalue: false,[\"hello\"]\nkey: UNSET\tvalue: true,[]\n",
+			want: "\nkey: BAR\tvalue: false,[bar]\nkey: EMPTY\tvalue: false,[]\nkey: FOO\tvalue: false,[   foo\nwith new line]\nkey: HELLO\tvalue: false,[\"hello\"]\nkey: UNSET\tvalue: true,[]\n",
 		},
 	}
 	for _, tt := range tests {
