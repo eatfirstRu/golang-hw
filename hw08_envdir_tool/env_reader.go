@@ -7,7 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"slices"
+	"sort"
 	"strings"
 )
 
@@ -21,7 +21,7 @@ func (e Environment) String() string {
 	for k := range e {
 		sl = append(sl, k)
 	}
-	slices.Sort(sl)
+	sort.Strings(sl)
 
 	for _, v := range sl {
 		str.WriteString(fmt.Sprintf("key: %s\tvalue: %v,[%s]\n", v, e[v].NeedRemove, e[v].Value))
