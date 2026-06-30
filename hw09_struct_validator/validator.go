@@ -12,16 +12,16 @@ import (
 
 var (
 	// ErrZeroValue is the error returned when variable has zero value
-	// and nonzero or nonnil was specified
+	// and nonzero or nonnil was specified.
 	ErrZeroValue = errors.New("zero value")
 	// ErrMin is the error returned when variable is less than mininum
-	// value specified
+	// value specified.
 	ErrMin = errors.New("less than min")
 	// ErrMax is the error returned when variable is more than
 	// maximum specified
 	ErrMax = errors.New("greater than max")
 	// ErrLen is the error returned when length is not equal to
-	// param specified
+	// param specified.
 	ErrLen = errors.New("invalid length")
 	// ErrRegexp is the error returned when the value does not
 	// match the provided regular expression parameter
@@ -84,24 +84,17 @@ func Validate(v interface{}) error {
 	for i := 0; i < st.NumField(); i++ {
 		field := st.Field(i)
 		tag := field.Tag.Get("validate")
-		val := reflect.ValueOf(v).FieldByName(field.Name) //.Interface()
+		val := reflect.ValueOf(v).FieldByName(field.Name) // .Interface()
 		if tag != "" {
-			vldt := make([]map[string]string, 0)
 			andCond := strings.Split(tag, "|")
 			for _, pair := range andCond {
-				mp := make(map[string]string)
 				parts := strings.Split(pair, ":")
 				if len(parts) != 2 {
-					// err := fmt.Errorf("%w: %s", ErrUnknownTag, parts)
-					ve = append(ve, ValidationError{Field: field.Name, Err: ErrUnknownTag}) // err})
+					ve = append(ve, ValidationError{Field: field.Name, Err: ErrUnknownTag})
 					continue
 				}
-				mp[parts[0]] = parts[1]
-				vldt = append(vldt, mp)
 				if _, ok := funcMap[parts[0]]; ok {
 					checkParam(field.Name, parts[0], parts[1], val)
-				} else {
-					continue
 				}
 			}
 		}
@@ -129,6 +122,26 @@ func convToInt(paramVal, fieldName string) (int, error) {
 	return pv, nil
 }
 
+func checkIn(fieldName, paramVal string, v reflect.Value) (bool, error) {
+	sl := strings.Split(paramVal, ",")
+	for _, vSl := range sl {
+		if v.Kind() == reflect.Int {
+			if pv, err := convToInt(vSl, fieldName); err == nil && v.Int() == int64(pv) {
+				return true, ErrIn
+			}
+		}
+		if v.Kind() == reflect.String && v.String() == vSl {
+			return true, ErrIn
+		}
+	}
+	return false, ErrIn
+}
+
+func checkRegexp(paramVal string, v reflect.Value) (bool, error) {
+	re := regexp.MustCompile(paramVal)
+	return re.MatchString(v.String()), ErrRegexp
+}
+
 func checkParam(fieldName, paramName, paramVal string, v reflect.Value) {
 	var valid bool
 	var retErr error
@@ -140,46 +153,29 @@ func checkParam(fieldName, paramName, paramVal string, v reflect.Value) {
 			checkParam(fieldName, paramName, paramVal, v.Index(i))
 		}
 		valid = true
-	case (paramName == "len" && v.Kind() == reflect.String):
+	case paramName == "len" && v.Kind() == reflect.String:
 		if pv, retErr = convToInt(paramVal, fieldName); retErr == nil {
 			valid = utf8.RuneCountInString(v.String()) == pv
 			retErr = ErrLen
 		}
-	case (paramName == "min" && v.Kind() == reflect.Int):
+	case paramName == "min" && v.Kind() == reflect.Int:
 		if pv, retErr = convToInt(paramVal, fieldName); retErr == nil {
 			valid = v.Int() > int64(pv)
 			retErr = ErrMin
 		}
-	case (paramName == "max" && v.Kind() == reflect.Int):
+	case paramName == "max" && v.Kind() == reflect.Int:
 		if pv, retErr = convToInt(paramVal, fieldName); retErr == nil {
 			valid = v.Int() < int64(pv)
 			retErr = ErrMax
 		}
-	case (paramName == "in" && (v.Kind() == reflect.Int || v.Kind() == reflect.String)):
-		sl := strings.Split(paramVal, ",")
-		retErr = ErrIn
-
-		for _, vSl := range sl {
-			if v.Kind() == reflect.Int {
-				if pv, err := convToInt(vSl, fieldName); err == nil {
-					valid = v.Int() == int64(pv)
-				}
-			}
-			if v.Kind() == reflect.String {
-				valid = v.String() == vSl
-			}
-			if valid {
-				break
-			}
-		}
+	case paramName == "in" && (v.Kind() == reflect.Int || v.Kind() == reflect.String):
+		valid, retErr = checkIn(fieldName, paramVal, v)
 	case paramName == "regexp":
-		retErr = ErrRegexp
-		re := *regexp.MustCompile(paramVal)
-		valid = re.MatchString(v.String())
+		valid, retErr = checkRegexp(paramVal, v)
 	default:
 		appendVE(fieldName, ErrUnsupported)
 	}
-	if !valid && retErr != ErrBadParameter {
+	if !valid && !errors.Is(retErr, ErrBadParameter) {
 		appendVE(fieldName, retErr)
 	}
 }
