@@ -51,18 +51,21 @@ type ValidationError struct {
 type ValidationErrors []ValidationError
 
 func (v ValidationErrors) Error() string {
-	var err error
-	if len(ve) == 0 {
+	if len(v) == 0 {
 		return ""
 	}
 	if len(v) == 1 {
 		return fmt.Errorf("field: %s %w ", v[0].Field, v[0].Err).Error()
 	}
 
-	for _, ve := range v {
-		err = errors.Join(fmt.Errorf("field: %s %w ", ve.Field, ve.Err), err)
+	var sb strings.Builder
+	for i, ve := range v {
+		if i > 0 {
+			sb.WriteString("\n")
+		}
+		sb.WriteString(fmt.Errorf("field: %s %w ", ve.Field, ve.Err).Error())
 	}
-	return err.Error()
+	return sb.String()
 }
 
 var ve = make(ValidationErrors, 0)
@@ -76,7 +79,7 @@ func Validate(v interface{}) error {
 		"regexp": {},
 	}
 	st := reflect.TypeOf(v)
-	clear(ve)
+	ve = ve[:0]
 
 	for i := 0; i < st.NumField(); i++ {
 		field := st.Field(i)
