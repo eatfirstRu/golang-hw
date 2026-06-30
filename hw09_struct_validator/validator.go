@@ -11,35 +11,16 @@ import (
 )
 
 var (
-	// ErrZeroValue is the error returned when variable has zero value
-	// and nonzero or nonnil was specified.
-	ErrZeroValue = errors.New("zero value")
-	// ErrMin is the error returned when variable is less than mininum
-	// value specified.
-	ErrMin = errors.New("less than min")
-	// ErrMax is the error returned when variable is more than
-	// maximum specified
-	ErrMax = errors.New("greater than max")
-	// ErrLen is the error returned when length is not equal to
-	// param specified.
-	ErrLen = errors.New("invalid length")
-	// ErrRegexp is the error returned when the value does not
-	// match the provided regular expression parameter
-	ErrRegexp = errors.New("regular expression mismatch")
-	ErrIn     = errors.New("values not in enumeration")
-	// ErrUnsupported is the error error returned when a validation rule
-	// is used with an unsupported variable type
-	ErrUnsupported = errors.New("unsupported type")
-	// ErrBadParameter is the error returned when an invalid parameter
-	// is provided to a validation rule (e.g. a string where an int was
-	// expected (max=foo,len=bar) or missing a parameter when one is required (len=))
-	ErrBadParameter = errors.New("bad parameter")
-	// ErrUnknownTag is the error returned when an unknown tag is found
-	ErrUnknownTag = errors.New("unknown tag")
-	// ErrInvalid is the error returned when variable is invalid
-	// (normally a nil pointer)
-	ErrInvalid = errors.New("invalid value")
-	// ErrCannotValidate is the error returned when a struct is unexported
+	ErrZeroValue      = errors.New("zero value")
+	ErrMin            = errors.New("less than min")
+	ErrMax            = errors.New("greater than max")
+	ErrLen            = errors.New("invalid length")
+	ErrRegexp         = errors.New("regular expression mismatch")
+	ErrIn             = errors.New("values not in enumeration")
+	ErrUnsupported    = errors.New("unsupported type")
+	ErrBadParameter   = errors.New("bad parameter")
+	ErrUnknownTag     = errors.New("unknown tag")
+	ErrInvalid        = errors.New("invalid value")
 	ErrCannotValidate = errors.New("cannot validate unexported struct")
 )
 
@@ -84,7 +65,7 @@ func Validate(v interface{}) error {
 	for i := 0; i < st.NumField(); i++ {
 		field := st.Field(i)
 		tag := field.Tag.Get("validate")
-		val := reflect.ValueOf(v).FieldByName(field.Name) // .Interface()
+		val := reflect.ValueOf(v).FieldByName(field.Name)
 		if tag != "" {
 			andCond := strings.Split(tag, "|")
 			for _, pair := range andCond {
