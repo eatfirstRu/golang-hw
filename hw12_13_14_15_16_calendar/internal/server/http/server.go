@@ -2,30 +2,56 @@ package internalhttp
 
 import (
 	"context"
+	"fmt"
+	"net"
+	"net/http"
 )
 
-type Server struct { // TODO
+type Logger interface {
+	Info(msg string, args ...any)
+	Error(msg string, args ...any)
+	Warn(msg string, args ...any)
+	Debug(msg string, args ...any)
 }
 
-type Logger interface { // TODO
+type Application interface{}
+
+type Server struct {
+	httpServer *http.Server
+	logger     Logger
+	app        Application
 }
 
-type Application interface { // TODO
+func NewServer(logger Logger, app Application, host string, port int) *Server {
+	s := &Server{
+		logger: logger,
+		app:    app,
+	}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/hello", s.helloHandler)
+
+	s.httpServer = &http.Server{
+		Addr:    net.JoinHostPort(host, fmt.Sprintf("%d", port)),
+		Handler: loggingMiddleware(logger, mux),
+	}
+
+	return s
 }
 
-func NewServer(logger Logger, app Application) *Server {
-	return &Server{}
-}
-
-func (s *Server) Start(ctx context.Context) error {
-	// TODO
-	<-ctx.Done()
+func (s *Server) Start(_ context.Context) error {
+	s.logger.Info("starting HTTP server", "addr", s.httpServer.Addr)
+	if err := s.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		return err
+	}
 	return nil
 }
 
 func (s *Server) Stop(ctx context.Context) error {
-	// TODO
-	return nil
+	return s.httpServer.Shutdown(ctx)
 }
 
-// TODO
+func (s *Server) helloHandler(w http.ResponseWriter, _ *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Hello, World!")
+}

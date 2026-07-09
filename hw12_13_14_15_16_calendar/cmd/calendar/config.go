@@ -1,20 +1,9 @@
 package main
 
-// При желании конфигурацию можно вынести в internal/config.
-// Организация конфига в main принуждает нас сужать API компонентов, использовать
-// при их конструировании только необходимые параметры, а также уменьшает вероятность циклической зависимости.
-type Config struct {
-	Logger LoggerConf
-	// TODO
-}
+import (
+	"github.com/fixme_my_friend/hw12_13_14_15_16_calendar/internal/config"
+)
 
-type LoggerConf struct {
-	Level string
-	// TODO
+func NewConfig(path string) (*config.Config, error) {
+	return config.NewConfig(path)
 }
-
-func NewConfig() Config {
-	return Config{}
-}
-
-// TODO
