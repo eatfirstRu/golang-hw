@@ -1,77 +1,46 @@
 package logger
 
 import (
-	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"strings"
 )
 
-const (
-	levelDebug = iota
-	levelInfo
-	levelWarn
-	levelError
-)
-
 type Logger struct {
-	level  int
-	logger *log.Logger
+	logger *slog.Logger
 }
 
 func New(level string) *Logger {
-	var lvl int
+	var lvl slog.Level
 	switch strings.ToLower(level) {
 	case "debug":
-		lvl = levelDebug
+		lvl = slog.LevelDebug
 	case "info":
-		lvl = levelInfo
+		lvl = slog.LevelInfo
 	case "warn", "warning":
-		lvl = levelWarn
+		lvl = slog.LevelWarn
 	case "error":
-		lvl = levelError
+		lvl = slog.LevelError
 	default:
-		lvl = levelInfo
+		lvl = slog.LevelInfo
 	}
 
-	return &Logger{
-		level:  lvl,
-		logger: log.New(os.Stdout, "", log.LstdFlags),
-	}
+	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: lvl})
+	return &Logger{logger: slog.New(handler)}
 }
 
-func (l *Logger) Debug(msg string, args ...interface{}) {
-	if l.level <= levelDebug {
-		l.log("DEBUG", msg, args...)
-	}
+func (l *Logger) Debug(msg string, args ...any) {
+	l.logger.Debug(msg, args...)
 }
 
-func (l *Logger) Info(msg string, args ...interface{}) {
-	if l.level <= levelInfo {
-		l.log("INFO", msg, args...)
-	}
+func (l *Logger) Info(msg string, args ...any) {
+	l.logger.Info(msg, args...)
 }
 
-func (l *Logger) Warn(msg string, args ...interface{}) {
-	if l.level <= levelWarn {
-		l.log("WARN", msg, args...)
-	}
+func (l *Logger) Warn(msg string, args ...any) {
+	l.logger.Warn(msg, args...)
 }
 
-func (l *Logger) Error(msg string, args ...interface{}) {
-	if l.level <= levelError {
-		l.log("ERROR", msg, args...)
-	}
-}
-
-func (l *Logger) log(level, msg string, args ...interface{}) {
-	if len(args) > 0 {
-		kvs := make([]string, 0, len(args)/2)
-		for i := 0; i+1 < len(args); i += 2 {
-			kvs = append(kvs, fmt.Sprintf("%v=%v", args[i], args[i+1]))
-		}
-		l.logger.Printf("[%s] %s %s", level, msg, strings.Join(kvs, " "))
-	} else {
-		l.logger.Printf("[%s] %s", level, msg)
-	}
+func (l *Logger) Error(msg string, args ...any) {
+	l.logger.Error(msg, args...)
 }

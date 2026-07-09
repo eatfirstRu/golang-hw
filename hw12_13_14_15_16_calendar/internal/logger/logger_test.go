@@ -10,7 +10,7 @@ func TestNew(t *testing.T) {
 			t.Fatalf("expected non-nil logger for level %q", level)
 		}
 		if l.logger == nil {
-			t.Fatalf("expected non-nil log.Logger for level %q", level)
+			t.Fatalf("expected non-nil slog.Logger for level %q", level)
 		}
 	}
 }

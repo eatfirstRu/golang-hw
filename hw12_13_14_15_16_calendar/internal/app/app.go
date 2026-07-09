@@ -13,10 +13,10 @@ type App struct {
 }
 
 type Logger interface {
-	Info(msg string, args ...interface{})
-	Error(msg string, args ...interface{})
-	Warn(msg string, args ...interface{})
-	Debug(msg string, args ...interface{})
+	Info(msg string, args ...any)
+	Error(msg string, args ...any)
+	Warn(msg string, args ...any)
+	Debug(msg string, args ...any)
 }
 
 func New(logger Logger, store storage.Storage) *App {

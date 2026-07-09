@@ -1,6 +1,6 @@
 module github.com/fixme_my_friend/hw12_13_14_15_16_calendar
 
-go 1.19
+go 1.22
 
 require (
 	github.com/jackc/pgx/v5 v5.7.1
