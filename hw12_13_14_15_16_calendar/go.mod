@@ -2,8 +2,6 @@ module github.com/fixme_my_friend/hw12_13_14_15_16_calendar
 
 go 1.22.0
 
-toolchain go1.25.0
-
 require (
 	github.com/jackc/pgx/v5 v5.7.1
 	github.com/jmoiron/sqlx v1.4.0
