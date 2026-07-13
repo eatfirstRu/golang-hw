@@ -56,10 +56,6 @@ type eventsResponse struct {
 	Events []eventResponse `json:"events"`
 }
 
-type errorResponse struct {
-	Error string `json:"error"`
-}
-
 func createEvent(t *testing.T, req eventRequest) eventResponse {
 	t.Helper()
 	body, _ := json.Marshal(req)
