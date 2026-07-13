@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"time"
+
+	"github.com/fixme_my_friend/hw12_13_14_15_16_calendar/internal/storage"
 )
 
 type Logger interface {
@@ -14,7 +17,14 @@ type Logger interface {
 	Debug(msg string, args ...any)
 }
 
-type Application interface{}
+type Application interface {
+	CreateEvent(ctx context.Context, event storage.Event) error
+	UpdateEvent(ctx context.Context, id string, event storage.Event) error
+	DeleteEvent(ctx context.Context, id string) error
+	ListEventsDay(ctx context.Context, date time.Time) ([]storage.Event, error)
+	ListEventsWeek(ctx context.Context, date time.Time) ([]storage.Event, error)
+	ListEventsMonth(ctx context.Context, date time.Time) ([]storage.Event, error)
+}
 
 type Server struct {
 	httpServer *http.Server
@@ -30,6 +40,11 @@ func NewServer(logger Logger, app Application, host string, port int) *Server {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/hello", s.helloHandler)
+	mux.HandleFunc("/events", s.eventsHandler)
+	mux.HandleFunc("/events/", s.eventByIDHandler)
+	mux.HandleFunc("/events/day", s.listEventsDayHandler)
+	mux.HandleFunc("/events/week", s.listEventsWeekHandler)
+	mux.HandleFunc("/events/month", s.listEventsMonthHandler)
 
 	s.httpServer = &http.Server{
 		Addr:    net.JoinHostPort(host, fmt.Sprintf("%d", port)),
