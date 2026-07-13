@@ -8,10 +8,12 @@ import (
 )
 
 type Config struct {
-	Logger     LoggerConf  `yaml:"logger"`
-	Storage    StorageConf `yaml:"storage"`
-	Database   DBConf      `yaml:"database"`
-	HTTPServer HTTPConf    `yaml:"http_server"`
+	Logger     LoggerConf    `yaml:"logger"`
+	Storage    StorageConf   `yaml:"storage"`
+	Database   DBConf        `yaml:"database"`
+	HTTPServer HTTPConf      `yaml:"http_server"`
+	Kafka      KafkaConf     `yaml:"kafka"`
+	Scheduler  SchedulerConf `yaml:"scheduler"`
 }
 
 type LoggerConf struct {
@@ -34,6 +36,16 @@ type DBConf struct {
 type HTTPConf struct {
 	Host string `yaml:"host"`
 	Port int    `yaml:"port"`
+}
+
+type KafkaConf struct {
+	Brokers []string `yaml:"brokers"`
+	Topic   string   `yaml:"topic"`
+	GroupID string   `yaml:"group_id"`
+}
+
+type SchedulerConf struct {
+	Interval string `yaml:"interval"`
 }
 
 func NewConfig(path string) (*Config, error) {

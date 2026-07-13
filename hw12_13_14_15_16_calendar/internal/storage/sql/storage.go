@@ -171,6 +171,45 @@ func (d dbEvent) toEvent() storage.Event {
 	}
 }
 
+func (s *Storage) GetEventsToNotify(ctx context.Context, now time.Time) ([]storage.Event, error) {
+	var rows []dbEvent
+	err := s.db.SelectContext(ctx, &rows,
+		`SELECT id, title, date_time, duration, description, user_id, notify_before
+		 FROM events
+		 WHERE notify_before > 0
+		   AND date_time - (notify_before || ' microseconds')::interval <= $1
+		   AND date_time > $1`, now)
+	if err != nil {
+		return nil, fmt.Errorf("get events to notify: %w", err)
+	}
+
+	events := make([]storage.Event, 0, len(rows))
+	for _, r := range rows {
+		events = append(events, r.toEvent())
+	}
+	return events, nil
+}
+
+func (s *Storage) DeleteOldEvents(ctx context.Context, before time.Time) (int64, error) {
+	result, err := s.db.ExecContext(ctx,
+		"DELETE FROM events WHERE date_time < $1", before)
+	if err != nil {
+		return 0, fmt.Errorf("delete old events: %w", err)
+	}
+	return result.RowsAffected()
+}
+
+func (s *Storage) SaveNotification(ctx context.Context, n storage.Notification) error {
+	_, err := s.db.ExecContext(ctx,
+		`INSERT INTO notifications (event_id, title, date_time, user_id)
+		 VALUES ($1, $2, $3, $4)`,
+		n.EventID, n.Title, n.DateTime, n.UserID)
+	if err != nil {
+		return fmt.Errorf("save notification: %w", err)
+	}
+	return nil
+}
+
 func truncateToDay(t time.Time) time.Time {
 	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
 }
