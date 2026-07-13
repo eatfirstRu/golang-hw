@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/fixme_my_friend/hw12_13_14_15_16_calendar/internal/metrics"
 	"github.com/fixme_my_friend/hw12_13_14_15_16_calendar/internal/queue"
 	"github.com/fixme_my_friend/hw12_13_14_15_16_calendar/internal/storage"
 )
@@ -42,6 +43,7 @@ func (s *Storer) Run(ctx context.Context) error {
 			return fmt.Errorf("save notification: %w", err)
 		}
 
+		metrics.NotificationsSaved.Inc()
 		s.logger.Info("notification saved", "event_id", n.EventID, "title", n.Title)
 		return nil
 	})

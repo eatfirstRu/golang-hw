@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/fixme_my_friend/hw12_13_14_15_16_calendar/internal/metrics"
 	"github.com/fixme_my_friend/hw12_13_14_15_16_calendar/internal/storage"
 )
 
@@ -85,6 +86,7 @@ func (s *Server) createEventHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	metrics.EventsCreated.Inc()
 	writeJSON(w, http.StatusCreated, toEventResponse(event))
 }
 
@@ -114,6 +116,7 @@ func (s *Server) updateEventHandler(w http.ResponseWriter, r *http.Request, id s
 		return
 	}
 
+	metrics.EventsUpdated.Inc()
 	event.ID = id
 	writeJSON(w, http.StatusOK, toEventResponse(event))
 }
@@ -128,6 +131,7 @@ func (s *Server) deleteEventHandler(w http.ResponseWriter, r *http.Request, id s
 		return
 	}
 
+	metrics.EventsDeleted.Inc()
 	w.WriteHeader(http.StatusNoContent)
 }
 

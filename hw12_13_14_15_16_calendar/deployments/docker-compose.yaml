@@ -97,5 +97,14 @@ services:
       - CALENDAR_DB_HOST=postgres
       - CALENDAR_KAFKA_BROKER=kafka:9092
 
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../configs/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - calendar
+
 volumes:
   pgdata:

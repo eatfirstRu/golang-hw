@@ -3,7 +3,10 @@ package internalhttp
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
+
+	"github.com/fixme_my_friend/hw12_13_14_15_16_calendar/internal/metrics"
 )
 
 type responseWriter struct {
@@ -28,6 +31,9 @@ func loggingMiddleware(logger Logger, next http.Handler) http.Handler {
 		next.ServeHTTP(rw, r)
 
 		latency := time.Since(start)
+
+		metrics.HTTPRequestsTotal.WithLabelValues(r.Method, r.URL.Path, strconv.Itoa(rw.statusCode)).Inc()
+		metrics.HTTPRequestDuration.WithLabelValues(r.Method, r.URL.Path).Observe(latency.Seconds())
 
 		logger.Info(fmt.Sprintf("%s [%s] %s %s %s %d %d %q",
 			r.RemoteAddr,

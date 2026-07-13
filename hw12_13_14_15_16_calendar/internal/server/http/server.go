@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/fixme_my_friend/hw12_13_14_15_16_calendar/internal/storage"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type Logger interface {
@@ -40,6 +41,7 @@ func NewServer(logger Logger, app Application, host string, port int) *Server {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/hello", s.helloHandler)
+	mux.Handle("/metrics", promhttp.Handler())
 	mux.HandleFunc("/events", s.eventsHandler)
 	mux.HandleFunc("/events/", s.eventByIDHandler)
 	mux.HandleFunc("/events/day", s.listEventsDayHandler)

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/fixme_my_friend/hw12_13_14_15_16_calendar/internal/metrics"
 	"github.com/fixme_my_friend/hw12_13_14_15_16_calendar/internal/queue"
 	"github.com/fixme_my_friend/hw12_13_14_15_16_calendar/internal/storage"
 )
@@ -44,6 +45,7 @@ func (s *Scheduler) Run(ctx context.Context) error {
 			return nil
 		case <-ticker.C:
 			if err := s.tick(ctx); err != nil {
+				metrics.SchedulerErrors.Inc()
 				s.logger.Error("scheduler tick failed", "error", err)
 			}
 		}
@@ -51,6 +53,11 @@ func (s *Scheduler) Run(ctx context.Context) error {
 }
 
 func (s *Scheduler) tick(ctx context.Context) error {
+	start := time.Now()
+	defer func() {
+		metrics.SchedulerTickDuration.Observe(time.Since(start).Seconds())
+	}()
+
 	now := time.Now()
 
 	events, err := s.storage.GetEventsToNotify(ctx, now)
@@ -73,9 +80,11 @@ func (s *Scheduler) tick(ctx context.Context) error {
 		}
 
 		if err := s.producer.SendNotification(ctx, data); err != nil {
+			metrics.NotificationsSendErrors.Inc()
 			s.logger.Error("send notification", "error", err, "event_id", e.ID)
 			continue
 		}
+		metrics.NotificationsSent.Inc()
 		s.logger.Info("notification sent", "event_id", e.ID, "title", e.Title)
 	}
 
@@ -85,6 +94,7 @@ func (s *Scheduler) tick(ctx context.Context) error {
 		return fmt.Errorf("delete old events: %w", err)
 	}
 	if deleted > 0 {
+		metrics.OldEventsDeleted.Add(float64(deleted))
 		s.logger.Info("old events deleted", "count", deleted)
 	}
 
