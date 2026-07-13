@@ -1,0 +1,18 @@
+FROM golang:1.22-alpine as build
+
+WORKDIR /go/src/
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+ARG LDFLAGS
+RUN CGO_ENABLED=0 go build -ldflags "$LDFLAGS" -o /opt/calendar/storer cmd/calendar_storer/*
+
+FROM alpine:3.19
+
+COPY --from=build /opt/calendar/storer /opt/calendar/storer
+COPY ./configs/storer_docker.yaml /etc/calendar/config.yaml
+
+CMD ["/opt/calendar/storer", "-config", "/etc/calendar/config.yaml"]

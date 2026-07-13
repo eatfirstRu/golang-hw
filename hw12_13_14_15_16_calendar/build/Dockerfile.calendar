@@ -1,0 +1,20 @@
+FROM golang:1.22-alpine as build
+
+WORKDIR /go/src/
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+ARG LDFLAGS
+RUN CGO_ENABLED=0 go build -ldflags "$LDFLAGS" -o /opt/calendar/calendar cmd/calendar/*
+
+FROM alpine:3.19
+
+COPY --from=build /opt/calendar/calendar /opt/calendar/calendar
+COPY ./configs/calendar_docker.yaml /etc/calendar/config.yaml
+
+EXPOSE 8080
+
+CMD ["/opt/calendar/calendar", "-config", "/etc/calendar/config.yaml"]

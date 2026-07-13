@@ -1,0 +1,19 @@
+logger:
+  level: info
+
+storage:
+  type: sql
+
+database:
+  host: postgres
+  port: 5432
+  user: calendar
+  password: calendar
+  name: calendar
+  ssl_mode: disable
+
+kafka:
+  brokers:
+    - kafka:9092
+  topic: calendar-notifications
+  group_id: calendar-storer

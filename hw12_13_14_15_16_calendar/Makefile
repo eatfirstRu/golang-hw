@@ -35,7 +35,18 @@ install-lint-deps:
 lint: install-lint-deps
 	golangci-lint run ./...
 
+up:
+	docker compose -f deployments/docker-compose.yaml up -d --build
+
+down:
+	docker compose -f deployments/docker-compose.yaml down --remove-orphans -v
+
+integration-tests:
+	docker compose -f deployments/docker-compose.test.yaml up --build --abort-on-container-exit --exit-code-from integration-tests && \
+	docker compose -f deployments/docker-compose.test.yaml down --remove-orphans -v || \
+	(docker compose -f deployments/docker-compose.test.yaml down --remove-orphans -v; exit 1)
+
 migrate:
 	goose -dir ./migrations postgres "$(DATABASE_URL)" up
 
-.PHONY: build run build-img run-img version test lint migrate
+.PHONY: build run build-img run-img version test lint migrate up down integration-tests
