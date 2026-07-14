@@ -1,0 +1,21 @@
+logger:
+  level: info
+
+storage:
+  type: sql
+
+database:
+  host: localhost
+  port: 5432
+  user: calendar
+  password: calendar
+  name: calendar
+  ssl_mode: disable
+
+kafka:
+  brokers:
+    - localhost:9092
+  topic: calendar-notifications
+
+scheduler:
+  interval: 10s

@@ -1,0 +1,239 @@
+openapi: 3.0.3
+info:
+  title: Calendar API
+  description: REST API for Calendar service
+  version: 1.0.0
+
+paths:
+  /events:
+    post:
+      summary: Create a new event
+      operationId: createEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRequest'
+      responses:
+        '201':
+          description: Event created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Date is busy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /events/{id}:
+    put:
+      summary: Update an existing event
+      operationId: updateEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRequest'
+      responses:
+        '200':
+          description: Event updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Date is busy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete an event
+      operationId: deleteEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Event deleted
+        '404':
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /events/day:
+    get:
+      summary: List events for a specific day
+      operationId: listEventsDay
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Date in YYYY-MM-DD format
+      responses:
+        '200':
+          description: List of events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventsResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /events/week:
+    get:
+      summary: List events for a week starting from the given date
+      operationId: listEventsWeek
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Start date of the week in YYYY-MM-DD format
+      responses:
+        '200':
+          description: List of events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventsResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /events/month:
+    get:
+      summary: List events for a month starting from the given date
+      operationId: listEventsMonth
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Start date of the month in YYYY-MM-DD format
+      responses:
+        '200':
+          description: List of events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventsResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    EventRequest:
+      type: object
+      required:
+        - title
+        - date_time
+        - duration
+        - user_id
+      properties:
+        title:
+          type: string
+          example: "Team meeting"
+        date_time:
+          type: string
+          format: date-time
+          example: "2024-06-15T10:00:00Z"
+        duration:
+          type: string
+          description: Duration in Go format (e.g. 1h30m)
+          example: "1h30m"
+        description:
+          type: string
+          example: "Weekly team sync"
+        user_id:
+          type: string
+          example: "user-123"
+        notify_before:
+          type: string
+          description: Notification time before event in Go format
+          example: "24h"
+
+    EventResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        date_time:
+          type: string
+          format: date-time
+        duration:
+          type: string
+        description:
+          type: string
+        user_id:
+          type: string
+        notify_before:
+          type: string
+
+    EventsResponse:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventResponse'
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
